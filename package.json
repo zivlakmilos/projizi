@@ -2,7 +2,12 @@
   "name": "projizi",
   "version": "1.0.0",
   "description": "ProjiZI - Project generator",
+  "type": "module",
   "main": "src/cli.js",
+  "exports": "src/cli.js",
+  "bin": {
+    "projizi": "bin/projizi.js"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -12,6 +17,7 @@
   },
   "keywords": [
     "projizi",
+    "cli",
     "project-generator",
     "orm-generator"
   ],
@@ -20,5 +26,8 @@
   "bugs": {
     "url": "https://github.com/zivlakmilos/projizi/issues"
   },
-  "homepage": "https://github.com/zivlakmilos/projizi#readme"
+  "homepage": "https://github.com/zivlakmilos/projizi#readme",
+  "dependencies": {
+    "yargs": "^17.7.1"
+  }
 }

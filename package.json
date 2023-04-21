@@ -1,0 +1,24 @@
+{
+  "name": "projizi",
+  "version": "1.0.0",
+  "description": "ProjiZI - Project generator",
+  "main": "src/cli.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/zivlakmilos/projizi.git"
+  },
+  "keywords": [
+    "projizi",
+    "project-generator",
+    "orm-generator"
+  ],
+  "author": "Milos Zivlak",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/zivlakmilos/projizi/issues"
+  },
+  "homepage": "https://github.com/zivlakmilos/projizi#readme"
+}

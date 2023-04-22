@@ -7,6 +7,10 @@ const plugins = {
       name: 'supabase',
       file: 'supabase.js',
     },
+    {
+      name: 'react-material',
+      file: 'ceact-material.js',
+    },
   ],
 };
 

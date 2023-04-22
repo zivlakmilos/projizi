@@ -16,7 +16,7 @@ export const listGenerators = () => {
   return plugins.plugins.map(el => el.name);
 }
 
-export const generate = async () => {
+export const generate = async (args) => {
   const pluginPath = plugins.prefix + '';
   const { exec } = await import(pluginPath);
 

@@ -9,16 +9,16 @@ const parseArguments = (rawArgs) => {
     .usage("Usage: projizi [command] [options]")
     .version().alias('v', 'version')
     .help().alias('h', 'help')
-    .command('init [options]', 'Init config file', (yargs) => {
+    .command('init [options] <generators...>', 'Init config file', (yargs) => {
       return yargs
         .option('config', {
           alias: 'c',
           type: 'string',
           description: 'Config file',
+          default: 'projizi.json',
         })
         .positional('generators', {
           description: 'List of generators for project',
-          default: 'supabase',
         });
     })
     .command('generate [options]', 'Generate projects and files', (yargs) => {
@@ -29,7 +29,7 @@ const parseArguments = (rawArgs) => {
           description: 'Output folder',
         })
     })
-    .command('list', 'List values', (yargs) => {
+    .command('list [option...]', 'List values', (yargs) => {
       return yargs
         .positional('option', {
           description: 'Option to show list',
@@ -42,11 +42,11 @@ const parseArguments = (rawArgs) => {
 }
 
 const execListCommand = (args) => {
-  if (args._.length === 1) {
+  if (!args.option.length) {
     console.log('Available lists:')
     console.log('  generators');
   } else {
-    const list = args._[1];
+    const list = args.option[0];
 
     if (list === 'generators') {
       console.log('Available generators:');

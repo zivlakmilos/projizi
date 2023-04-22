@@ -21,6 +21,12 @@ export const init = async (args) => {
         id: 'profiles',
         title: 'Users',
         row_level_security: true,
+        security: {
+          select: null,
+          insert: null,
+          update: 'id',
+          delete: 'id',
+        },
 
         fields: [
           {
@@ -60,6 +66,12 @@ export const init = async (args) => {
         id: 'posts',
         title: 'Posts',
         row_level_security: true,
+        security: {
+          select: null,
+          insert: null,
+          update: 'users_id',
+          delete: 'users_id',
+        },
 
         fields: [
           {

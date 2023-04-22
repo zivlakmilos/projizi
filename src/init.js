@@ -10,7 +10,6 @@ export const listInitPlugins = () => {
 }
 
 export const init = async (args) => {
-  console.log(args);
   const filePath = args.config;
 
   const config = {

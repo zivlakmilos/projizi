@@ -23,10 +23,17 @@ const parseArguments = (rawArgs) => {
     })
     .command('generate [options]', 'Generate projects and files', (yargs) => {
       return yargs
+        .option('config', {
+          alias: 'c',
+          type: 'string',
+          description: 'Config file',
+          default: 'projizi.json',
+        })
         .option('output', {
           alias: 'o',
           type: 'string',
           description: 'Output folder',
+          default: './',
         })
     })
     .command('list [option...]', 'List values', (yargs) => {

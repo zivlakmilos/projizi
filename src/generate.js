@@ -1,9 +1,11 @@
+import fs from 'fs-extra';
+
 const plugins = {
   prefix: './plugins/generate/',
   plugins: [
     {
       name: 'supabase',
-      file: 'supabase',
+      file: 'supabase.js',
     },
   ],
 };
@@ -17,8 +19,23 @@ export const listGenerators = () => {
 }
 
 export const generate = async (args) => {
-  const pluginPath = plugins.prefix + '';
-  const { exec } = await import(pluginPath);
+  const configPath = args.config;
+  const config = fs.readJsonSync(configPath);
 
-  return await exec();
+  if (!config.generators || !config.generators.length) {
+    console.error('Generators is missing from config!');
+    return;
+  }
+
+  for (const el of config.generators) {
+    const plugin = plugins.plugins.find(e => e.name === el);
+    if (!plugin) {
+      console.error(`Generator ${el} don't exists!`);
+      return;
+    }
+    const pluginPath = plugins.prefix + plugin.file;
+    const { exec } = await import(pluginPath);
+
+    await exec(args, config);
+  }
 }

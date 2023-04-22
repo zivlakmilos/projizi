@@ -9,7 +9,7 @@ const plugins = {
     },
     {
       name: 'react-material',
-      file: 'ceact-material.js',
+      file: 'react-material.js',
     },
   ],
 };

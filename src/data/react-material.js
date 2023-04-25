@@ -203,3 +203,90 @@ export default GenericForm;
 
   return GenericForm
 }
+
+export const generateGenericTable = () => {
+  const GenericTable = `
+import React from 'react';
+import Paper from '@mui/material/Paper';
+import TableContainer from '@mui/material/TableContainer';
+import Table from '@mui/material/Table';
+import TableHead from '@mui/material/TableHead';
+import TableBody from '@mui/material/TableBody';
+import TableRow from '@mui/material/TableRow';
+import TableCell from '@mui/material/TableCell';
+
+
+import Pagination from '@mui/material/Pagination';
+
+const GenericTable = (props) => {
+  const header = props.columns.map((el) => {
+    let align = 'left';
+    if (el.align) {
+      align = el.align
+    }
+    return (
+      <TableCell key={el.id} align={align} minWidth={el.minWidth} style={{minWidth: el.minWidth}}>
+        {el.title}
+      </TableCell>
+    );
+  });
+
+  const data = props.data.map((row, index) => {
+    const cells = [];
+    props.columns.forEach((el) => {
+      let align = 'left';
+      if (el.align) {
+        align = el.align;
+      }
+
+      cells.push(
+        <TableCell key={el.id} align={align}>
+          {el.callback ? el.callback(row[el.id]) : row[el.id]}
+        </TableCell>
+      );
+    });
+
+    return (
+      <TableRow key={index}>
+        {cells}
+      </TableRow>
+    );
+  });
+
+  let pagination = null;
+  if (props.pagination) {
+    pagination = (
+      <Pagination
+        page={props.pagination.currentPage}
+        count={props.pagination.lastPage}
+        color="primary"
+        onChange={(event, value) => props.onPageChanged(value)} />
+    );
+  }
+
+  return (
+    <Paper>
+      <TableContainer>
+        <Table size={props.size}>
+          <TableHead>
+            <TableRow>
+              {header}
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {data}
+          </TableBody>
+        </Table>
+      </TableContainer>
+      <br />
+      {pagination}
+      <br />
+    </Paper>
+  );
+}
+
+export default GenericTable;
+  `;
+
+  return GenericTable;
+}

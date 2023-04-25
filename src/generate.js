@@ -31,6 +31,10 @@ export const generate = async (args) => {
     return;
   }
 
+  if (!fs.existsSync(args.output)) {
+    fs.mkdirSync(args.output);
+  }
+
   for (const el of config.generators) {
     const plugin = plugins.plugins.find(e => e.name === el);
     if (!plugin) {

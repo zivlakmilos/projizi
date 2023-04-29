@@ -65,6 +65,7 @@ export const init = async (args) => {
       {
         id: 'posts',
         title: 'Posts',
+        component_name: 'Post',
         row_level_security: true,
         security: {
           select: null,

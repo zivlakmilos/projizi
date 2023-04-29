@@ -1,9 +1,8 @@
-
 export const generateGenericForm = () => {
-  const GenericForm = `
-import React, { useState } from 'react';
+  const GenericForm =
+    `import React, { useState, useEffect } from 'react';
 import Grid from '@mui/material/Grid';
-import Button from '@mui/material/Buton';
+import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
 import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
@@ -22,7 +21,9 @@ const GenericForm = (props) => {
   } = props;
 
   useEffect(() => {
-    setValues({ ...data });
+    if (data) {
+      setValues([...data]);
+    }
   }, [data]);
 
   const showError = (msg) => {
@@ -32,7 +33,7 @@ const GenericForm = (props) => {
   }
 
   const validate = () => {
-    for (el of values) {
+    for (const el of values) {
       if (el.validation) {
         if (el.validation.required) {
           if (!el.value.length) {
@@ -94,7 +95,7 @@ const GenericForm = (props) => {
       value = newValue;
     }
 
-    const index = values.find(el => id === id);
+    const index = values.findIndex(el => el.id === id);
     if (index < 0) {
       return;
     }
@@ -150,8 +151,8 @@ const GenericForm = (props) => {
           <Select
             labelId="demo-simple-select-label"
             id={el.id}
-            value={age}
-            label="Age"
+            value={el.value}
+            label={el.label}
             onChange={e => onChangeHandler(e, el.id, el.type)}>
             {el.options.map(opt => {
               return (
@@ -172,7 +173,7 @@ const GenericForm = (props) => {
     }
 
     return (
-      <Grid xs={12}>
+      <Grid item xs={12} key={el.id}>
         <FormControl fullWidth>
           {cmp}
         </FormControl>
@@ -184,8 +185,7 @@ const GenericForm = (props) => {
     <>
       <Grid container spacing={1}>
         {components}
-        <br />
-        <Grid xs={12}>
+        <Grid item xs={12}>
           <Button
             variant="contained"
             color="primary"
@@ -198,15 +198,14 @@ const GenericForm = (props) => {
   );
 }
 
-export default GenericForm;
-`;
+export default GenericForm;`;
 
   return GenericForm
 }
 
 export const generateGenericTable = () => {
-  const GenericTable = `
-import React from 'react';
+  const GenericTable =
+    `import React from 'react';
 import Paper from '@mui/material/Paper';
 import TableContainer from '@mui/material/TableContainer';
 import Table from '@mui/material/Table';
@@ -214,7 +213,6 @@ import TableHead from '@mui/material/TableHead';
 import TableBody from '@mui/material/TableBody';
 import TableRow from '@mui/material/TableRow';
 import TableCell from '@mui/material/TableCell';
-
 
 import Pagination from '@mui/material/Pagination';
 
@@ -225,7 +223,7 @@ const GenericTable = (props) => {
       align = el.align
     }
     return (
-      <TableCell key={el.id} align={align} minWidth={el.minWidth} style={{minWidth: el.minWidth}}>
+      <TableCell key={el.id} align={align} style={{ minWidth: el.minWidth }}>
         {el.title}
       </TableCell>
     );
@@ -285,8 +283,229 @@ const GenericTable = (props) => {
   );
 }
 
-export default GenericTable;
-  `;
+export default GenericTable;`;
 
   return GenericTable;
+}
+
+export const generateEditPage = (name, title, table, frm) => {
+  const EditPage =
+    `import React, { useState, useEffect } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
+
+import { withStore } from '../store';
+import { db } from '../db';
+import Layout from '../hoc/Layout';
+import CCard from '../hoc/Card';
+import GenericForm from '../components/GenericForm';
+import MessageDialog from '../components/MessageDialog';
+
+const initialFrm = ${frm}
+
+const ${name} = (props) => {
+  const { id } = useParams();
+  const navigate = useNavigate();
+
+  const isNew = !!id;
+
+  const [frm, setFrm] = useState(initialFrm);
+  const [error, setError] = useState(null);
+
+  const fetchData = async () => {
+    const res = await db.from('${table}')
+      .select()
+      .eq('id', id);
+
+    if (res.error) {
+      console.log(res.error);
+      navigate('/departments');
+    }
+
+    if (res.data && res.data.length) {
+      const updatedFrm = frm.map(el => {
+        el.value = res.data[0][el.id];
+      });
+      setFrm(updatedFrm);
+    }
+  }
+
+  useEffect(() => {
+    if (id) {
+      fetchData().catch(err => console.log(err));
+    }
+  }, [id]);
+
+  const onSaveHandler = async (data) => {
+    const req = data.reduce((acc, cur) => {
+      acc[cur.id] = cur.value;
+      return acc;
+    }, {});
+
+    if (isNew) {
+      const res = await db.from('${table}')
+        .insert(req);
+
+      if (res.error) {
+        console.log(res.error);
+        setError(res.error.message);
+      }
+    } else {
+      const res = await db.from('${table}')
+        .update(req)
+        .eq('id', id);
+      if (res.error) {
+        console.log(res.error);
+        setError(res.error.message);
+      }
+    }
+  }
+
+  const onErrorHandler = (err) => {
+    setError(err);
+  }
+
+  return (
+    <Layout title="${title}">
+      <CCard>
+        <GenericForm
+          data={frm}
+          onSave={onSaveHandler}
+          onError={onErrorHandler} />
+
+        <MessageDialog
+          open={!!error}
+          title="Greška"
+          text={error}
+          onClose={() => setError(null)} />
+      </CCard>
+    </Layout>
+  );
+}
+
+export default withStore(['nav'])(${name});`;
+
+  return EditPage;
+}
+
+export const generateTablePage = (name, title, table, columns) => {
+  const TablePage =
+    `import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import {
+  Button,
+  IconButton,
+} from '@mui/material';
+import {
+  Delete as DeleteIcon,
+  Edit as EditIcon,
+} from '@mui/icons-material';
+
+import { withStore } from '../store';
+import { db } from '../db';
+import Layout from '../hoc/Layout';
+import CCard from '../hoc/Card';
+import GenericTable from '../components/GenericTable';
+import ConfirmDialog from '../components/ConfirmDialog';
+
+const columns = ${columns}
+
+const ${name} = (props) => {
+  const navigate = useNavigate();
+
+  const [removeId, setRemoveId] = useState(null);
+
+  const [values, setValues] = useState([]);
+
+  const fetchData = async () => {
+    const res = await db.from('${table}')
+      .select();
+
+    if (res.error) {
+      console.log(res.error);
+      return;
+    }
+
+    setValues(res.data);
+  }
+
+  const deleteData = async (id) => {
+    const res = await db.from('${table}')
+      .delete()
+      .eq('id', id);
+
+    if (res.error) {
+      console.log(res.error);
+    }
+
+    setValues(values.filter(el => el.id !== id));
+  }
+
+  useEffect(() => {
+    fetchData()
+      .catch(err => console.log(err));
+  }, []);
+
+  const onEditHandler = (id) => {
+    navigate('/departments/' + id);
+  }
+
+  const onDeleteHandler = (id) => {
+    deleteData(id)
+      .catch(err => console.log(err));
+    setRemoveId(null);
+  }
+
+  let removeDialog = null;
+  if (removeId) {
+    removeDialog = (
+      <ConfirmDialog
+        title="Brisanje odeljenja"
+        text="Da li ste sigurni da želite obrisati odeljenje i sve radnike u njemu"
+        open={!!removeId}
+        onConfirm={onDeleteHandler}
+        onCancel={() => setRemoveId(null)}
+        payload={removeId}
+        danger
+      />
+    );
+  }
+
+  const data = values.map(el => {
+    const res = {
+      ...el,
+      actions: (
+        <>
+          <IconButton onClick={() => onEditHandler(el.id)}>
+            <EditIcon />
+          </IconButton>
+          &nbsp;
+          <IconButton color="error" onClick={() => setRemoveId(el.id)}>
+            <DeleteIcon />
+          </IconButton>
+        </>
+      ),
+    };
+
+    return res;
+  });
+
+  return (
+    <Layout title="${title}">
+      <CCard>
+        <Button variant="contained">Novo odeljenje</Button>
+        <br />
+        <br />
+        <GenericTable
+          columns={columns}
+          data={data} />
+      </CCard>
+
+      {removeDialog}
+    </Layout>
+  );
+}
+
+export default withStore(['nav'])(${name});`;
+
+  return TablePage;
 }

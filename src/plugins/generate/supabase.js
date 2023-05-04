@@ -21,7 +21,7 @@ const createRowLevelSecurity = (table) => {
   res += `WITH CHECK(true);\n\n`;
 
   res += `CREATE POLICY "policy_table_${table.id}_update"\n`;
-  res += `ON public.available_tags\n`;
+  res += `ON "public"."${table.id}"\n`;
   res += `FOR UPDATE USING(\n`;
   res += `  auth.uid() = ${table.security.update}\n`;
   res += `) WITH CHECK(\n`;
@@ -29,7 +29,7 @@ const createRowLevelSecurity = (table) => {
   res += `);\n\n`;
 
   res += `CREATE POLICY "policy_table_${table.id}_delete"\n`;
-  res += `ON public.available_tags\n`;
+  res += `ON "public"."${table.id}"\n`;
   res += `FOR DELETE USING(\n`;
   res += `  auth.uid() = ${table.security.delete}\n`;
   res += `);\n\n`;

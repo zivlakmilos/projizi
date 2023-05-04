@@ -40,7 +40,7 @@ const createRowLevelSecurity = (table) => {
 const createField = (field) => {
   let res = '';
 
-  res += `  "${field.id}" ${field.type} ${field.not_null ? 'not null' : ''} ${field.default_value ? 'default ' + field.default_value : ''} ${field.primary_key ? 'primary key' : ''},\n`;
+  res += `  "${field.id}" ${field.type} ${field.not_null ? 'not null' : ''} ${field.default_value ? 'default ' + field.default_value : ''} ${field.primary_key ? 'primary key' : ''}`;
 
   return res;
 }
@@ -48,12 +48,16 @@ const createField = (field) => {
 const createTable = (table) => {
   let res = '';
 
-  res += `create table "public"."${table.id}"(\n`;
+  res += `create table "public"."${table.id}" (\n`;
 
-  table.fields.forEach(el => {
+  table.fields.forEach((el, index) => {
+    if (index > 0) {
+      res += `,\n`
+    }
     res += createField(el);
   });
 
+  res += '\n';
   res += ');\n\n';
 
   res += createRowLevelSecurity(table);

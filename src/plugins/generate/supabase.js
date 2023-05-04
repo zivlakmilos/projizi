@@ -8,7 +8,7 @@ const createRowLevelSecurity = (table) => {
     res += `alter table "public"."${table.id}" enable row level security;\n\n`;
   }
 
-  res += `CREATE POLICY "policy_table_${table.id}_insert"\n`;
+  res += `CREATE POLICY "policy_table_${table.id}_select"\n`;
   res += `ON "public"."${table.id}"\n`;
   res += `FOR SELECT USING (\n`;
   res += `  ${table.security.select ? 'auth.uid() = ' + table.security.select : 'true'}\n`;

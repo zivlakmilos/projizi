@@ -16,7 +16,7 @@ const createGenericTable = () => {
   return generateGenericTable();
 }
 
-const createTablePage = (table) => {
+const createFormPage = (table) => {
   const typeToString = (type) => {
     if (type === 'int8' || type === 'int16' || type === 'int32') {
       return 'number';
@@ -50,7 +50,7 @@ const createTablePage = (table) => {
   return generateEditPage(table.component_name + 'Edit', table.title, table.id, frm);
 }
 
-const createFormPage = (table) => {
+const createTablePage = (table) => {
   let columns = `[\n`;
 
   for (const field of table.fields) {
